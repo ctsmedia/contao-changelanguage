@@ -100,7 +100,7 @@ class LanguageText
         /**
          * contao itself expects the language to be in format language-COUNTRY - e.g. `en-US`, however in the below
          * usort the method `getNormalizedLanguage()` would return en_US - thus the array_search fails in such cases
-         * if you just use the language itself without appending the country this issue will not surface and search
+         * if you just use the language without appending the country this issue will not surface and the usort
          * will work as expected
          */
         array_walk($languages, function(&$value) {
