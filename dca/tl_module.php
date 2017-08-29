@@ -14,8 +14,10 @@
  * Palettes
  */
 $GLOBALS['TL_DCA']['tl_module']['palettes']['__selector__'][]       = 'customLanguage';
-$GLOBALS['TL_DCA']['tl_module']['palettes']['changelanguage']       = '{title_legend},name,headline,type;{config_legend},hideActiveLanguage,hideNoFallback,customLanguage;{template_legend:hide},navigationTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space';
+$GLOBALS['TL_DCA']['tl_module']['palettes']['__selector__'][]       = 'limitToRootPages';
+$GLOBALS['TL_DCA']['tl_module']['palettes']['changelanguage']       = '{title_legend},name,headline,type;{config_legend},hideActiveLanguage,hideNoFallback,customLanguage,limitToRootPages;{template_legend:hide},navigationTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space';
 $GLOBALS['TL_DCA']['tl_module']['subpalettes']['customLanguage']    = 'customLanguageText';
+$GLOBALS['TL_DCA']['tl_module']['subpalettes']['limitToRootPages']  = 'rootPageIds,negateRootPageIds';
 
 
 /**
@@ -73,4 +75,32 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['customLanguageText'] = array
         'tl_class'     => 'clr',
     ),
     'sql'                     => "text NULL"
+);
+
+$GLOBALS['TL_DCA']['tl_module']['fields']['limitToRootPages'] = array
+(
+    'label'                   => &$GLOBALS['TL_LANG']['tl_module']['limitToRootPages'],
+    'exclude'                 => true,
+    'inputType'               => 'checkbox',
+    'eval'                    => ['submitOnChange' => true, 'tl_class' => 'clr'],
+    'sql'                     => "char(1) NOT NULL default ''"
+);
+
+$GLOBALS['TL_DCA']['tl_module']['fields']['rootPageIds'] = array
+(
+    'label'                   => &$GLOBALS['TL_LANG']['tl_module']['rootPageIds'],
+    'exclude'                 => true,
+    'inputType'               => 'select',
+    'options_callback'        => array('Terminal42\ChangeLanguage\EventListener\DataContainer\ModuleFieldsListener', 'onRootPageIdsOptions'),
+    'eval'                    => ['mandatory' => true, 'multiple' => true, 'chosen' => true, 'csv' => ',', 'tl_class' => 'clr'],
+    'sql'                     => "TEXT null"
+);
+
+$GLOBALS['TL_DCA']['tl_module']['fields']['negateRootPageIds'] = array
+(
+    'label'                   => &$GLOBALS['TL_LANG']['tl_module']['negateRootPageIds'],
+    'exclude'                 => true,
+    'inputType'               => 'checkbox',
+    'eval'                    => ['tl_class' => 'clr'],
+    'sql'                     => "char(1) NOT NULL default ''"
 );

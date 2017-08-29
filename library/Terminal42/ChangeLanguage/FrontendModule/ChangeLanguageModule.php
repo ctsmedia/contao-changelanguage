@@ -58,7 +58,15 @@ class ChangeLanguageModule extends AbstractFrontendModule
     protected function compile()
     {
         $currentPage = $this->getCurrentPage();
-        $pageFinder = new PageFinder();
+
+        if ($this->limitToRootPages) {
+            $rootPageIds = $this->getRootPageIds();
+            $negateRootPageIds = (bool)$this->negateRootPageIds;
+
+            $pageFinder = new PageFinder($rootPageIds, $negateRootPageIds);
+        } else {
+            $pageFinder = new PageFinder();
+        }
 
         if ($this->customLanguage) {
             $languageText = LanguageText::createFromOptionWizard($this->customLanguageText);
@@ -155,6 +163,40 @@ class ChangeLanguageModule extends AbstractFrontendModule
         global $objPage;
 
         return $objPage;
+    }
+
+    /**
+     * @return array
+     */
+    protected function getRootPageIds()
+    {
+        $rootPageIds = explode(',', $this->rootPageIds);
+        $negateRootPageIds = (bool)$this->negateRootPageIds;
+        $currentPage = $this->getCurrentPage();
+
+        /**
+         * usecase: you want to show all rootPageIds which are NOT configured in the module config
+         * if the rootId of the current page is part of the list, we need to remove it - if its not removed then the
+         * active page will not be shown in the list
+         */
+        if ($negateRootPageIds && in_array($currentPage->rootId, $rootPageIds)) {
+            $key = array_search($currentPage->rootId, $rootPageIds);
+
+            if ($key !== false) {
+                unset($rootPageIds[$key]);
+            }
+        }
+
+        /**
+         * usecase: you want to show all rootPageIds which are configured in the module config
+         * if the rootId of the current page is NOT part of the list, we need to add it - if its not added then the
+         * active page will not be shown in the list
+         */
+        if (!$negateRootPageIds && !in_array($currentPage->rootId, $rootPageIds)) {
+            $rootPageIds[] = $currentPage->rootId;
+        }
+
+        return $rootPageIds;
     }
 
     /**

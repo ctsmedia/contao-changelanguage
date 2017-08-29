@@ -18,6 +18,31 @@ use Contao\PageModel;
 class PageFinder
 {
     /**
+     * @var array
+     */
+    private $rootPageIds;
+
+    /**
+     * @var bool
+     */
+    private $negateRootPageIds;
+
+    /**
+     * Constructor.
+     *
+     * @param array $rootPageIds limits result to given root pages
+     * @param bool  $negateRootPageIds if true, negates the condition so all but the given $rootPageIds are found
+     */
+    public function __construct(array $rootPageIds = [], $negateRootPageIds = false)
+    {
+        foreach(array_unique($rootPageIds) as $id) {
+            $this->rootPageIds[] = intval($id);
+        }
+
+        $this->negateRootPageIds = $negateRootPageIds;
+    }
+
+    /**
      * @param PageModel $page
      * @param bool      $skipCurrent
      * @param bool      $publishedOnly
@@ -68,6 +93,8 @@ class PageFinder
             $this->addPublishingConditions($columns, $t);
         }
 
+        $this->addLimitRootPageIdsCondition($columns, $values, $t);
+
         return $this->findPages($columns, $values, ['order' => 'sorting']);
     }
 
@@ -94,10 +121,11 @@ class PageFinder
             )",
         ];
 
-        return PageModel::findOneBy(
-            $columns,
-            [$page->domain, $page->domain, $page->domain]
-        );
+        $values = [$page->domain, $page->domain, $page->domain];
+
+        $this->addLimitRootPageIdsCondition($columns, $values, $t);
+
+        return PageModel::findOneBy($columns, $values);
     }
 
     /**
@@ -244,6 +272,27 @@ class PageFinder
             $columns[] = "$table.published='1'";
             $columns[] = "($table.start='' OR $table.start<$start)";
             $columns[] = "($table.stop='' OR $table.stop>$stop)";
+        }
+    }
+
+    /**
+     * @param array  $columns
+     * @param array  $values
+     * @param string $table
+     */
+    private function addLimitRootPageIdsCondition(array &$columns, array &$values, $table)
+    {
+        if (count($this->rootPageIds)) {
+            /**
+             * this will generate a comma separated string of placeholders
+             * example: if there are 5 entries in rootPageIds it will generate the following string: ?,?,?,?,?
+             */
+            $placeholders = (implode(',', array_pad([], count($this->rootPageIds), '?')));
+
+            $negation = ($this->negateRootPageIds)? 'NOT' : '';
+
+            $columns[] = "$table.id $negation IN($placeholders)";
+            $values = array_merge($values, $this->rootPageIds);
         }
     }
 
