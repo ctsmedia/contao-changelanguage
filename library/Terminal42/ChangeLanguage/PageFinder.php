@@ -39,7 +39,7 @@ class PageFinder
             $this->rootPageIds[] = intval($id);
         }
 
-        $this->negateRootPageIds = $negateRootPageIds;
+        $this->negateRootPageIds = (bool)$negateRootPageIds;
     }
 
     /**
