@@ -68,7 +68,7 @@ class LanguageTextWithMapEntriesTest extends ContaoTestCase
         $this->items[] = new NavigationItem($bazDe);
     }
 
-    public function testOrderNavigationItemsReturnsExpectedOrder()
+    public function testOrderNavigationItemsResultsInExpectedOrder()
     {
         $this->languageText->orderNavigationItems($this->items);
         $keys = array_keys($this->map);
