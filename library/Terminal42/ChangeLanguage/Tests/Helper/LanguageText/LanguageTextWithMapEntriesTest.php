@@ -3,8 +3,7 @@
 /*
  * changelanguage Extension for Contao Open Source CMS
  *
- * @copyright  Copyright (c) 2008-2017, terminal42 gmbh
- * @author     terminal42 gmbh <info@terminal42.ch>
+ * @copyright  Copyright (c) CTS GmbH
  * @author     CTS GmbH <info@cts-media.eu>
  * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
  * @link       http://github.com/terminal42/contao-changelanguage
@@ -30,7 +29,7 @@ class LanguageTextWithMapEntriesTest extends ContaoTestCase
     private $items;
 
     /**
-     * @var array
+     * @var array this defined both the displayed text AND the sorting order
      */
     private $map = [
         'en'    => 'International',
@@ -61,7 +60,7 @@ class LanguageTextWithMapEntriesTest extends ContaoTestCase
         $helloFr = PageModel::findById($helloFrId);
         $worldPl = PageModel::findById($worldPlId);
 
-        //items do not get added in "correct" order on purpose
+        //items do not get added in "correct" order on purpose to test the sorting
         $this->items[] = new NavigationItem($barCh);
         $this->items[] = new NavigationItem($worldPl);
         $this->items[] = new NavigationItem($fooCom);
@@ -69,7 +68,7 @@ class LanguageTextWithMapEntriesTest extends ContaoTestCase
         $this->items[] = new NavigationItem($bazDe);
     }
 
-    public function testOrderNavigationItemsWithMixedLanguageTags()
+    public function testOrderNavigationItemsReturnsExpectedOrder()
     {
         $this->languageText->orderNavigationItems($this->items);
         $keys = array_keys($this->map);
