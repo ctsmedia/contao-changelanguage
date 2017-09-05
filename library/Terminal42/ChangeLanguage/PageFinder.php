@@ -20,26 +20,26 @@ class PageFinder
     /**
      * @var array
      */
-    private $rootPageIds;
+    private $websiteRootPageIds;
 
     /**
      * @var bool
      */
-    private $negateRootPageIds;
+    private $negateWebsiteRootsSelection;
 
     /**
      * Constructor.
      *
-     * @param array $rootPageIds limits result to given root pages
-     * @param bool  $negateRootPageIds if true, negates the condition so all but the given $rootPageIds are found
+     * @param array $websiteRootPageIds          limits result to given root pages
+     * @param bool  $negateWebsiteRootsSelection if true, negates condition so all but the given $websiteRootPageIds are found
      */
-    public function __construct(array $rootPageIds = [], $negateRootPageIds = false)
+    public function __construct(array $websiteRootPageIds = [], $negateWebsiteRootsSelection = false)
     {
-        foreach(array_unique($rootPageIds) as $id) {
-            $this->rootPageIds[] = intval($id);
+        foreach(array_unique($websiteRootPageIds) as $id) {
+            $this->websiteRootPageIds[] = intval($id);
         }
 
-        $this->negateRootPageIds = (bool)$negateRootPageIds;
+        $this->negateWebsiteRootsSelection = (bool)$negateWebsiteRootsSelection;
     }
 
     /**
@@ -93,7 +93,7 @@ class PageFinder
             $this->addPublishingConditions($columns, $t);
         }
 
-        $this->addLimitRootPageIdsCondition($columns, $values, $t, $page);
+        $this->addWebsiteRootPageIdsCondition($columns, $values, $t, $page);
 
         return $this->findPages($columns, $values, ['order' => 'sorting']);
     }
@@ -123,7 +123,7 @@ class PageFinder
 
         $values = [$page->domain, $page->domain, $page->domain];
 
-        $this->addLimitRootPageIdsCondition($columns, $values, $t, $page);
+        $this->addWebsiteRootPageIdsCondition($columns, $values, $t, $page);
 
         return PageModel::findOneBy($columns, $values);
     }
@@ -280,21 +280,21 @@ class PageFinder
      * @param array  $values
      * @param string $table
      */
-    private function addLimitRootPageIdsCondition(array &$columns, array &$values, $table, PageModel $page)
+    private function addWebsiteRootPageIdsCondition(array &$columns, array &$values, $table, PageModel $page)
     {
-        if (count($this->rootPageIds)) {
-            $rootPageIds = $this->addCurrentPageRootToSelection($page, ...$this->rootPageIds);
+        if (count($this->websiteRootPageIds)) {
+            $websiteRootPageIds = $this->addCurrentPageRootToSelection($page, ...$this->websiteRootPageIds);
 
             /**
              * this will generate a comma separated string of placeholders
-             * example: if there are 5 entries in rootPageIds it will generate the following string: ?,?,?,?,?
+             * example: if there are 5 entries in websiteRootPageIds it will generate the following string: ?,?,?,?,?
              */
-            $placeholders = (implode(',', array_pad([], count($rootPageIds), '?')));
+            $placeholders = (implode(',', array_pad([], count($websiteRootPageIds), '?')));
 
-            $negation = ($this->negateRootPageIds)? 'NOT' : '';
+            $negation = ($this->negateWebsiteRootsSelection)? 'NOT' : '';
 
             $columns[] = "$table.id $negation IN($placeholders)";
-            $values = array_merge($values, $rootPageIds);
+            $values = array_merge($values, $websiteRootPageIds);
         }
     }
 
@@ -323,30 +323,30 @@ class PageFinder
         return $models;
     }
 
-    private function addCurrentPageRootToSelection(PageModel $page, int ...$rootPageIds)
+    private function addCurrentPageRootToSelection(PageModel $page, int ...$websiteRootPageIds)
     {
         /**
-         * usecase: you want to show all rootPageIds which are NOT configured in the module config
+         * usecase: you want to show all websiteRootPageIds which are NOT configured in the module config
          * if the rootId of the current page is part of the list, we need to remove it - if its not removed then the
          * active page will not be shown in the list
          */
-        if ($this->negateRootPageIds && in_array($page->rootId, $rootPageIds)) {
-            $key = array_search($page->rootId, $rootPageIds);
+        if ($this->negateWebsiteRootsSelection && in_array($page->rootId, $websiteRootPageIds)) {
+            $key = array_search($page->rootId, $websiteRootPageIds);
 
             if ($key !== false) {
-                unset($rootPageIds[$key]);
+                unset($websiteRootPageIds[$key]);
             }
         }
 
         /**
-         * usecase: you want to show all rootPageIds which are configured in the module config
+         * usecase: you want to show all websiteRootPageIds which are configured in the module config
          * if the rootId of the current page is NOT part of the list, we need to add it - if its not added then the
          * active page will not be shown in the list
          */
-        if (!$this->negateRootPageIds && !in_array($page->rootId, $rootPageIds)) {
-            $rootPageIds[] = $page->rootId;
+        if (!$this->negateWebsiteRootsSelection && !in_array($page->rootId, $websiteRootPageIds)) {
+            $websiteRootPageIds[] = $page->rootId;
         }
 
-        return $rootPageIds;
+        return $websiteRootPageIds;
     }
 }

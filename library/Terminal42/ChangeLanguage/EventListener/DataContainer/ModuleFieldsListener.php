@@ -21,7 +21,7 @@ class ModuleFieldsListener
      *
      * @return array
      */
-    public function onRootPageIdsOptions()
+    public function onWebsiteRootPageIdsOptions()
     {
         /** @var PageModel[] $pages */
         $pages = PageModel::findBy(['tl_page.type=?'], ['root']);

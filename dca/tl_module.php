@@ -14,10 +14,10 @@
  * Palettes
  */
 $GLOBALS['TL_DCA']['tl_module']['palettes']['__selector__'][]       = 'customLanguage';
-$GLOBALS['TL_DCA']['tl_module']['palettes']['__selector__'][]       = 'limitToRootPages';
-$GLOBALS['TL_DCA']['tl_module']['palettes']['changelanguage']       = '{title_legend},name,headline,type;{config_legend},hideActiveLanguage,hideNoFallback,customLanguage,limitToRootPages;{template_legend:hide},navigationTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space';
+$GLOBALS['TL_DCA']['tl_module']['palettes']['__selector__'][]       = 'limitWebsiteRoots';
+$GLOBALS['TL_DCA']['tl_module']['palettes']['changelanguage']       = '{title_legend},name,headline,type;{config_legend},hideActiveLanguage,hideNoFallback,customLanguage,limitWebsiteRoots;{template_legend:hide},navigationTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space';
 $GLOBALS['TL_DCA']['tl_module']['subpalettes']['customLanguage']    = 'customLanguageText';
-$GLOBALS['TL_DCA']['tl_module']['subpalettes']['limitToRootPages']  = 'rootPageIds,negateRootPageIds';
+$GLOBALS['TL_DCA']['tl_module']['subpalettes']['limitWebsiteRoots']  = 'websiteRootPageIds,negateWebsiteRootsSelection';
 
 
 /**
@@ -77,28 +77,28 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['customLanguageText'] = array
     'sql'                     => "text NULL"
 );
 
-$GLOBALS['TL_DCA']['tl_module']['fields']['limitToRootPages'] = array
+$GLOBALS['TL_DCA']['tl_module']['fields']['limitWebsiteRoots'] = array
 (
-    'label'                   => &$GLOBALS['TL_LANG']['tl_module']['limitToRootPages'],
+    'label'                   => &$GLOBALS['TL_LANG']['tl_module']['limitWebsiteRoots'],
     'exclude'                 => true,
     'inputType'               => 'checkbox',
     'eval'                    => ['submitOnChange' => true, 'tl_class' => 'clr'],
     'sql'                     => "char(1) NOT NULL default ''"
 );
 
-$GLOBALS['TL_DCA']['tl_module']['fields']['rootPageIds'] = array
+$GLOBALS['TL_DCA']['tl_module']['fields']['websiteRootPageIds'] = array
 (
-    'label'                   => &$GLOBALS['TL_LANG']['tl_module']['rootPageIds'],
+    'label'                   => &$GLOBALS['TL_LANG']['tl_module']['websiteRootPageIds'],
     'exclude'                 => true,
     'inputType'               => 'select',
-    'options_callback'        => array('Terminal42\ChangeLanguage\EventListener\DataContainer\ModuleFieldsListener', 'onRootPageIdsOptions'),
+    'options_callback'        => array('Terminal42\ChangeLanguage\EventListener\DataContainer\ModuleFieldsListener', 'onWebsiteRootPageIdsOptions'),
     'eval'                    => ['mandatory' => true, 'multiple' => true, 'chosen' => true, 'csv' => ',', 'tl_class' => 'clr'],
     'sql'                     => "TEXT null"
 );
 
-$GLOBALS['TL_DCA']['tl_module']['fields']['negateRootPageIds'] = array
+$GLOBALS['TL_DCA']['tl_module']['fields']['negateWebsiteRootsSelection'] = array
 (
-    'label'                   => &$GLOBALS['TL_LANG']['tl_module']['negateRootPageIds'],
+    'label'                   => &$GLOBALS['TL_LANG']['tl_module']['negateWebsiteRootsSelection'],
     'exclude'                 => true,
     'inputType'               => 'checkbox',
     'eval'                    => ['tl_class' => 'clr'],

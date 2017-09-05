@@ -59,11 +59,11 @@ class ChangeLanguageModule extends AbstractFrontendModule
     {
         $currentPage = $this->getCurrentPage();
 
-        if ($this->limitToRootPages) {
-            $rootPageIds = explode(',', $this->rootPageIds);
-            $negateRootPageIds = (bool)$this->negateRootPageIds;
+        if ($this->limitWebsiteRoots) {
+            $websiteRootPageIds = explode(',', $this->websiteRootPageIds);
+            $negateWebsiteRootsSelection = (bool)$this->negateWebsiteRootsSelection;
 
-            $pageFinder = new PageFinder($rootPageIds, $negateRootPageIds);
+            $pageFinder = new PageFinder($websiteRootPageIds, $negateWebsiteRootsSelection);
         } else {
             $pageFinder = new PageFinder();
         }
