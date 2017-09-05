@@ -47,6 +47,30 @@
                 <source>Replacement text</source>
                 <target>Ersatztext</target>
             </trans-unit>
+            <trans-unit id="tl_module.limitWebsiteRoots.0">
+                <source>Limit Website Roots in Navigation</source>
+                <target>Anzeigen von Website Roots begrenzen</target>
+            </trans-unit>
+            <trans-unit id="tl_module.limitWebsiteRoots.1">
+                <source>Turning this on will allow you to determine which website roots should be shown in the navigation.</source>
+                <target>Aktiviert die Möglichkeit die anzuzeigenden Website Roots zu begrenzen</target>
+            </trans-unit>
+            <trans-unit id="tl_module.websiteRootPageIds.0">
+                <source>Website Roots</source>
+                <target>Website Roots</target>
+            </trans-unit>
+            <trans-unit id="tl_module.websiteRootPageIds.1">
+                <source>Choose the Website Roots you want to include / exclude (depends on the below checkbox).</source>
+                <target>Wähle die Website Roots aus, die einbezogen / ausgeschlossen (Abhängig von unterer Checkbox) werden.</target>
+            </trans-unit>
+            <trans-unit id="tl_module.negateWebsiteRootsSelection.0">
+                <source>Exclude Selection</source>
+                <target>Auswahl ausschließen</target>
+            </trans-unit>
+            <trans-unit id="tl_module.negateWebsiteRootsSelection.1">
+                <source>All pages in the Selection will be excluded.</source>
+                <target>Alle Seiten in der Auswahl werden ausgeschlossen</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
