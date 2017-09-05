@@ -93,7 +93,7 @@ class PageFinder
             $this->addPublishingConditions($columns, $t);
         }
 
-        $this->addLimitRootPageIdsCondition($columns, $values, $t);
+        $this->addLimitRootPageIdsCondition($columns, $values, $t, $page);
 
         return $this->findPages($columns, $values, ['order' => 'sorting']);
     }
@@ -123,7 +123,7 @@ class PageFinder
 
         $values = [$page->domain, $page->domain, $page->domain];
 
-        $this->addLimitRootPageIdsCondition($columns, $values, $t);
+        $this->addLimitRootPageIdsCondition($columns, $values, $t, $page);
 
         return PageModel::findOneBy($columns, $values);
     }
@@ -280,19 +280,21 @@ class PageFinder
      * @param array  $values
      * @param string $table
      */
-    private function addLimitRootPageIdsCondition(array &$columns, array &$values, $table)
+    private function addLimitRootPageIdsCondition(array &$columns, array &$values, $table, PageModel $page)
     {
         if (count($this->rootPageIds)) {
+            $rootPageIds = $this->addCurrentPageRootToSelection($page, ...$this->rootPageIds);
+
             /**
              * this will generate a comma separated string of placeholders
              * example: if there are 5 entries in rootPageIds it will generate the following string: ?,?,?,?,?
              */
-            $placeholders = (implode(',', array_pad([], count($this->rootPageIds), '?')));
+            $placeholders = (implode(',', array_pad([], count($rootPageIds), '?')));
 
             $negation = ($this->negateRootPageIds)? 'NOT' : '';
 
             $columns[] = "$table.id $negation IN($placeholders)";
-            $values = array_merge($values, $this->rootPageIds);
+            $values = array_merge($values, $rootPageIds);
         }
     }
 
@@ -319,5 +321,32 @@ class PageFinder
         }
 
         return $models;
+    }
+
+    private function addCurrentPageRootToSelection(PageModel $page, int ...$rootPageIds)
+    {
+        /**
+         * usecase: you want to show all rootPageIds which are NOT configured in the module config
+         * if the rootId of the current page is part of the list, we need to remove it - if its not removed then the
+         * active page will not be shown in the list
+         */
+        if ($this->negateRootPageIds && in_array($page->rootId, $rootPageIds)) {
+            $key = array_search($page->rootId, $rootPageIds);
+
+            if ($key !== false) {
+                unset($rootPageIds[$key]);
+            }
+        }
+
+        /**
+         * usecase: you want to show all rootPageIds which are configured in the module config
+         * if the rootId of the current page is NOT part of the list, we need to add it - if its not added then the
+         * active page will not be shown in the list
+         */
+        if (!$this->negateRootPageIds && !in_array($page->rootId, $rootPageIds)) {
+            $rootPageIds[] = $page->rootId;
+        }
+
+        return $rootPageIds;
     }
 }
