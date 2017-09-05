@@ -293,7 +293,7 @@ class PageFinder
 
             $negation = ($this->negateWebsiteRootsSelection)? 'NOT' : '';
 
-            $columns[] = "$table.id $negation IN($placeholders)";
+            $columns[] = "$table.id ${negation} IN(${placeholders})";
             $values = array_merge($values, $websiteRootPageIds);
         }
     }
