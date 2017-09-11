@@ -18,6 +18,31 @@ use Contao\PageModel;
 class PageFinder
 {
     /**
+     * @var array
+     */
+    private $websiteRootPageIds;
+
+    /**
+     * @var bool
+     */
+    private $negateWebsiteRootsSelection;
+
+    /**
+     * Constructor.
+     *
+     * @param array $websiteRootPageIds          limits result to given root pages
+     * @param bool  $negateWebsiteRootsSelection if true, negates condition so all but the given $websiteRootPageIds are found
+     */
+    public function __construct(array $websiteRootPageIds = [], $negateWebsiteRootsSelection = false)
+    {
+        foreach(array_unique($websiteRootPageIds) as $id) {
+            $this->websiteRootPageIds[] = intval($id);
+        }
+
+        $this->negateWebsiteRootsSelection = (bool)$negateWebsiteRootsSelection;
+    }
+
+    /**
      * @param PageModel $page
      * @param bool      $skipCurrent
      * @param bool      $publishedOnly
@@ -68,6 +93,8 @@ class PageFinder
             $this->addPublishingConditions($columns, $t);
         }
 
+        $this->addWebsiteRootPageIdsCondition($columns, $values, $t, $page);
+
         return $this->findPages($columns, $values, ['order' => 'sorting']);
     }
 
@@ -94,10 +121,11 @@ class PageFinder
             )",
         ];
 
-        return PageModel::findOneBy(
-            $columns,
-            [$page->domain, $page->domain, $page->domain]
-        );
+        $values = [$page->domain, $page->domain, $page->domain];
+
+        $this->addWebsiteRootPageIdsCondition($columns, $values, $t, $page);
+
+        return PageModel::findOneBy($columns, $values);
     }
 
     /**
@@ -248,6 +276,29 @@ class PageFinder
     }
 
     /**
+     * @param array  $columns
+     * @param array  $values
+     * @param string $table
+     */
+    private function addWebsiteRootPageIdsCondition(array &$columns, array &$values, $table, PageModel $page)
+    {
+        if (count($this->websiteRootPageIds)) {
+            $websiteRootPageIds = $this->addCurrentPageRootToSelection($page, ...$this->websiteRootPageIds);
+
+            /**
+             * this will generate a comma separated string of placeholders
+             * example: if there are 5 entries in websiteRootPageIds it will generate the following string: ?,?,?,?,?
+             */
+            $placeholders = (implode(',', array_pad([], count($websiteRootPageIds), '?')));
+
+            $negation = ($this->negateWebsiteRootsSelection)? 'NOT' : '';
+
+            $columns[] = "$table.id ${negation} IN(${placeholders})";
+            $values = array_merge($values, $websiteRootPageIds);
+        }
+    }
+
+    /**
      * @param array $columns
      * @param array $values
      * @param array $options
@@ -270,5 +321,32 @@ class PageFinder
         }
 
         return $models;
+    }
+
+    private function addCurrentPageRootToSelection(PageModel $page, int ...$websiteRootPageIds)
+    {
+        /**
+         * usecase: you want to show all websiteRootPageIds which are NOT configured in the module config
+         * if the rootId of the current page is part of the list, we need to remove it - if its not removed then the
+         * active page will not be shown in the list
+         */
+        if ($this->negateWebsiteRootsSelection && in_array($page->rootId, $websiteRootPageIds)) {
+            $key = array_search($page->rootId, $websiteRootPageIds);
+
+            if ($key !== false) {
+                unset($websiteRootPageIds[$key]);
+            }
+        }
+
+        /**
+         * usecase: you want to show all websiteRootPageIds which are configured in the module config
+         * if the rootId of the current page is NOT part of the list, we need to add it - if its not added then the
+         * active page will not be shown in the list
+         */
+        if (!$this->negateWebsiteRootsSelection && !in_array($page->rootId, $websiteRootPageIds)) {
+            $websiteRootPageIds[] = $page->rootId;
+        }
+
+        return $websiteRootPageIds;
     }
 }

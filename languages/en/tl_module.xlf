@@ -37,6 +37,24 @@
             <trans-unit id="tl_module.customLanguageText.label">
                 <source>Replacement text</source>
             </trans-unit>
+            <trans-unit id="tl_module.limitWebsiteRoots.0">
+                <source>Limit Website Roots in Navigation</source>
+            </trans-unit>
+            <trans-unit id="tl_module.limitWebsiteRoots.1">
+                <source>Turning this on will allow you to determine which website roots should be shown in the navigation.</source>
+            </trans-unit>
+            <trans-unit id="tl_module.websiteRootPageIds.0">
+                <source>Website Roots</source>
+            </trans-unit>
+            <trans-unit id="tl_module.websiteRootPageIds.1">
+                <source>Choose the Website Roots you want to include / exclude (depends on the below checkbox).</source>
+            </trans-unit>
+            <trans-unit id="tl_module.negateWebsiteRootsSelection.0">
+                <source>Exclude Selection</source>
+            </trans-unit>
+            <trans-unit id="tl_module.negateWebsiteRootsSelection.1">
+                <source>All pages in the Selection will be excluded.</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>

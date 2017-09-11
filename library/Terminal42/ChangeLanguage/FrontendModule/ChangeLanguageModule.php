@@ -58,7 +58,15 @@ class ChangeLanguageModule extends AbstractFrontendModule
     protected function compile()
     {
         $currentPage = $this->getCurrentPage();
-        $pageFinder = new PageFinder();
+
+        if ($this->limitWebsiteRoots) {
+            $websiteRootPageIds = explode(',', $this->websiteRootPageIds);
+            $negateWebsiteRootsSelection = (bool)$this->negateWebsiteRootsSelection;
+
+            $pageFinder = new PageFinder($websiteRootPageIds, $negateWebsiteRootsSelection);
+        } else {
+            $pageFinder = new PageFinder();
+        }
 
         if ($this->customLanguage) {
             $languageText = LanguageText::createFromOptionWizard($this->customLanguageText);
