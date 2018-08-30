@@ -35,6 +35,9 @@ class PageFinder
      */
     public function __construct(array $websiteRootPageIds = [], $negateWebsiteRootsSelection = false)
     {
+        //fix for: Warning: count(): Parameter must be an array or an object that implements Countable in php 7.2
+        $this->websiteRootPageIds = [];
+
         foreach(array_unique($websiteRootPageIds) as $id) {
             $this->websiteRootPageIds[] = intval($id);
         }
